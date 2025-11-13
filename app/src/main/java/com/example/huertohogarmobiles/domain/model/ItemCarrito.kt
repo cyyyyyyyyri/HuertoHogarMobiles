@@ -1,0 +1,14 @@
+package com.example.huertohogarmobiles.domain.model
+
+/**
+ * Representa un item individual en el carrito
+ * Incluye lógica de negocio (subtotal calculado)
+ */
+data class ItemCarrito(
+    val producto: Producto,
+    val cantidad: Int = 1
+) {
+    // Propiedad calculada: subtotal del item
+    val subtotal: Double
+        get() = producto.precio * cantidad
+}
