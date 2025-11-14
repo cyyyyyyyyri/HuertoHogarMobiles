@@ -6,11 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.labx"
+    // ⚠️ CRÍTICO: NAMESPACE CORREGIDO
+    namespace = "com.example.huertohogarmobiles"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.labx"
+        // ⚠️ CRÍTICO: APPLICATION ID CORREGIDO
+        applicationId = "com.example.huertohogarmobiles"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -55,6 +57,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // ✅ SOLUCIÓN AL ERROR DE ÍCONOS: Material Icons Extendidos
+    implementation("androidx.compose.material:material-icons-extended")
 
     // Room Database
     implementation(libs.androidx.room.runtime)
