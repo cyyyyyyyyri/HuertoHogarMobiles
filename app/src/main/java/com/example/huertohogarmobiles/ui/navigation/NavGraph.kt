@@ -22,6 +22,7 @@ import com.example.huertohogarmobiles.ui.screen.LoginAdminScreen
 import com.example.huertohogarmobiles.ui.screen.PortadaScreen
 import com.example.huertohogarmobiles.ui.screen.RegistroScreen
 import com.example.huertohogarmobiles.ui.viewmodel.ProductoViewModel
+import kotlinx.coroutines.launch
 
 /**
  * NavGraph: Define el contenedor de navegación y las transiciones entre pantallas.
@@ -138,9 +139,12 @@ fun NavGraph(
             )
         }
 
-        // Panel Admin
+// Panel Admin
         composable(route = Rutas.PANEL_ADMIN) {
             val uiState by productoViewModel.uiState.collectAsState() // Observa el estado compartido
+
+            // Necesitas el scope para llamar a eliminarProducto
+            val scope = rememberCoroutineScope()
 
             AdminPanelScreen(
                 productos = uiState.productos,
@@ -153,7 +157,10 @@ fun NavGraph(
                     navController.navigate(Rutas.formularioEditar(producto.id))
                 },
                 onEliminarProducto = { producto ->
-                    productoViewModel.eliminarProducto(producto)
+                    // ✅ CORRECCIÓN: Ejecutar la función suspendida dentro del CoroutineScope
+                    scope.launch {
+                        productoViewModel.eliminarProducto(producto)
+                    }
                 },
                 onCerrarSesion = {
                     preferenciasManager.cerrarSesionAdmin()

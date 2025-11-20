@@ -41,9 +41,11 @@ fun AdminProductoCard(
                 Text("Stock: ${producto.stock} | Precio: $${producto.precio} CLP", style = MaterialTheme.typography.bodySmall)
             }
             Row {
+                // Botón Editar
                 IconButton(onClick = onEditar) {
                     Icon(Icons.Default.Edit, "Editar")
                 }
+                // Botón Eliminar
                 IconButton(onClick = onEliminar) {
                     Icon(Icons.Default.Delete, "Eliminar")
                 }
@@ -60,7 +62,7 @@ fun EstadisticasPanel(productos: List<Producto>) {
         Spacer(modifier = Modifier.height(8.dp))
         Text("Total de Productos: ${productos.size}")
         Text("Categorías Únicas: ${productos.distinctBy { it.categoria }.size}")
-        // Aquí puedes añadir métricas como "Producto más vendido", etc.
+        // Aquí puedes añadir métricas más avanzadas si las implementas
     }
 }
 
@@ -74,7 +76,7 @@ fun AdminPanelScreen(
     onAgregarProducto: () -> Unit,
     onEditarProducto: (Producto) -> Unit,
     onEliminarProducto: (Producto) -> Unit,
-    onCerrarSesion: () -> Unit
+    onCerrarSesion: () -> Unit // Callback para cerrar sesión
 ) {
     var tabSeleccionada by remember { mutableStateOf(0) }
     var productoAEliminar by remember { mutableStateOf<Producto?>(null) } // Controla el estado del diálogo
@@ -85,7 +87,8 @@ fun AdminPanelScreen(
                 title = { Text("Panel Admin - $usernameAdmin") },
                 actions = {
                     TextButton(onClick = onCerrarSesion) {
-                        Text("Cerrar Sesión", color = Color.White)
+                        // ✅ CORRECCIÓN VISIBILIDAD: Usamos el color de Error para destacar la acción de salida.
+                        Text("Cerrar Sesión", color = MaterialTheme.colorScheme.error)
                     }
                 }
             )
@@ -136,7 +139,7 @@ fun AdminPanelScreen(
         }
     }
 
-    // AlertDialog para confirmar eliminación (se muestra si productoAEliminar no es null)
+    // AlertDialog para confirmar eliminación
     productoAEliminar?.let { producto ->
         AlertDialog(
             onDismissRequest = { productoAEliminar = null },

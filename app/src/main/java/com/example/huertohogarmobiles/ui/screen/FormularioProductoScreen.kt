@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.huertohogarmobiles.data.repository.ProductoRepositoryImpl
 import com.example.huertohogarmobiles.domain.model.Producto
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,32 +24,32 @@ fun FormularioProductoScreen(
     productoRepository: ProductoRepositoryImpl,
     onBackClick: () -> Unit
 ) {
+    // Necesario para llamar funciones suspend (asíncronas)
     val scope = rememberCoroutineScope()
 
+    // 1. Lógica Inicial
     val esEdicion = productoId > 0
     val tituloPantalla = if (esEdicion) "Editar Producto" else "Nuevo Producto"
 
-    // Estado local del formulario, inicializado vacío
-    var nombre by remember { mutableStateOf("") }
-    var descripcion by remember { mutableStateOf("") }
-    var precio by remember { mutableStateOf("") }
-    var stock by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("") }
-    var imagenUrl by remember { mutableStateOf("") }
+    // 2. Carga Inicial del Producto para Edición
+    var productoOriginal: Producto? = null
 
-    // Carga asíncrona del producto para edición usando LaunchedEffect
-    LaunchedEffect(key1 = productoId) {
-        if (esEdicion) {
-            productoRepository.obtenerProductoPorId(productoId)?.let { producto ->
-                nombre = producto.nombre
-                descripcion = producto.descripcion
-                precio = producto.precio.toString()
-                stock = producto.stock.toString()
-                categoria = producto.categoria
-                imagenUrl = producto.imagenUrl
-            }
+    // Si es edición, cargamos el producto usando runBlocking (para el estado inicial)
+    if (esEdicion) {
+        productoOriginal = remember(productoId) {
+            // runBlocking se usa aquí solo para inicializar el estado mutable
+            runBlocking { productoRepository.obtenerProductoPorId(productoId) }
         }
     }
+
+    // 3. Estado local del formulario (inicializado con el producto original o vacío)
+    var nombre by remember { mutableStateOf(productoOriginal?.nombre ?: "") }
+    var descripcion by remember { mutableStateOf(productoOriginal?.descripcion ?: "") }
+    var precio by remember { mutableStateOf(productoOriginal?.precio?.toString() ?: "") }
+    var stock by remember { mutableStateOf(productoOriginal?.stock?.toString() ?: "") } // <-- ESTADO STOCK
+    var categoria by remember { mutableStateOf(productoOriginal?.categoria ?: "") }
+    var imagenUrl by remember { mutableStateOf(productoOriginal?.imagenUrl ?: "") }
+
 
     Scaffold(
         topBar = {
@@ -95,7 +96,7 @@ fun FormularioProductoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Campo Precio
+                // Campo Precio (CORREGIDO para un solo punto decimal)
                 OutlinedTextField(
                     value = precio,
                     onValueChange = { nuevoValor ->
@@ -108,7 +109,15 @@ fun FormularioProductoScreen(
                         }
                     },
                     label = { Text("Precio (CLP)") },
-                    // ✅ CAMBIO CLAVE: Usamos KeyboardType.Number para compatibilidad
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1f)
+                )
+
+                // ✅ CAMPO STOCK AÑADIDO Y CORREGIDO
+                OutlinedTextField(
+                    value = stock,
+                    onValueChange = { stock = it.filter { it.isDigit() } }, // Solo permite números
+                    label = { Text("Stock") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1f)
                 )
@@ -137,22 +146,32 @@ fun FormularioProductoScreen(
             Button(
                 onClick = {
                     scope.launch {
-                        val productoAGuardar = Producto(
-                            id = if (esEdicion) productoId else 0,
+                        // 1. Recolectar datos y corregir tipos
+                        val productoAGuardar = (productoOriginal ?: Producto(
+                            id = 0,
+                            nombre = "",
+                            descripcion = "",
+                            precio = 0.0,
+                            stock = 0,
+                            categoria = "",
+                            imagenUrl = ""
+                        )).copy(
                             nombre = nombre,
                             descripcion = descripcion,
-                            precio = precio.toDoubleOrNull() ?: 0.0,
-                            stock = stock.toIntOrNull() ?: 0,
+                            precio = precio.toDoubleOrNull() ?: 0.0, // Conversión segura a Double
+                            stock = stock.toIntOrNull() ?: 0,         // Conversión segura a Int
                             categoria = categoria,
                             imagenUrl = imagenUrl
                         )
 
+                        // 2. Llamar al repositorio
                         if (esEdicion) {
                             productoRepository.actualizarProducto(productoAGuardar)
                         } else {
                             productoRepository.insertarProducto(productoAGuardar)
                         }
 
+                        // 3. Volver a la pantalla anterior
                         onBackClick()
                     }
                 },

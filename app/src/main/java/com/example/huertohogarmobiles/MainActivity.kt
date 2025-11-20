@@ -3,13 +3,13 @@ package com.example.huertohogarmobiles
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel // <-- Usar el ViewModel de Compose
 import androidx.navigation.compose.rememberNavController
-import com.example.huertohogarmobiles.data.local.HuertoHogarDB
+import com.example.huertohogarmobiles.data.local.AppDatabase // <-- USAR TU CLASE EXISTENTE
 import com.example.huertohogarmobiles.data.local.PreferenciasManager
 import com.example.huertohogarmobiles.data.repository.CarritoRepository
 import com.example.huertohogarmobiles.data.repository.ProductoRepositoryImpl
@@ -22,10 +22,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // --- INYECCIÓN DE DEPENDENCIAS MANUAL ---
-
         // 1. Base de Datos y DAOs
-        val database = HuertoHogarDB.getDatabase(this)
+        // Usamos AppDatabase, que es la clase que existe en tu proyecto
+        val database = AppDatabase.getDatabase(applicationContext)
         val productoDao = database.productoDao()
         val carritoDao = database.carritoDao()
 
@@ -34,12 +33,7 @@ class MainActivity : ComponentActivity() {
         val carritoRepository = CarritoRepository(carritoDao)
 
         // 3. Preferencias de Usuario
-        val preferenciasManager = PreferenciasManager(this)
-
-        // 4. ViewModel (con su Factory)
-        val productoViewModel: ProductoViewModel by viewModels {
-            ProductoViewModelFactory(productoRepository)
-        }
+        val preferenciasManager = PreferenciasManager(applicationContext)
 
         setContent {
             HuertoHogarMobilesTheme {
@@ -48,6 +42,12 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
+
+                    // 4. ViewModel (Inyección con Compose ViewModel helper)
+                    val productoViewModel: ProductoViewModel = viewModel(
+                        factory = ProductoViewModelFactory(productoRepository)
+                    )
+
                     NavGraph(
                         navController = navController,
                         productoRepository = productoRepository,
