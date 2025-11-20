@@ -11,33 +11,42 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+// Paleta de colores para el tema oscuro
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = DarkGreenPrimary,
+    onPrimary = DarkGreenOnPrimary,
+    primaryContainer = DarkGreenPrimaryContainer,
+    onPrimaryContainer = DarkGreenOnPrimaryContainer,
+    secondary = DarkGreenSecondary,
+    onSecondary = DarkGreenOnSecondary,
+    secondaryContainer = DarkGreenSecondaryContainer,
+    onSecondaryContainer = DarkGreenOnSecondaryContainer,
+    tertiary = DarkGreenTertiary,
+    onTertiary = DarkGreenOnTertiary,
+    tertiaryContainer = DarkGreenTertiaryContainer,
+    onTertiaryContainer = DarkGreenOnTertiaryContainer
 )
 
+// Paleta de colores para el tema claro
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = GreenPrimary,
+    onPrimary = GreenOnPrimary,
+    primaryContainer = GreenPrimaryContainer,
+    onPrimaryContainer = GreenOnPrimaryContainer,
+    secondary = GreenSecondary,
+    onSecondary = GreenOnSecondary,
+    secondaryContainer = GreenSecondaryContainer,
+    onSecondaryContainer = GreenOnSecondaryContainer,
+    tertiary = GreenTertiary,
+    onTertiary = GreenOnTertiary,
+    tertiaryContainer = GreenTertiaryContainer,
+    onTertiaryContainer = GreenOnTertiaryContainer
 )
 
 @Composable
 fun HuertoHogarMobilesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Deshabilitar color dinámico para usar nuestro tema
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -45,7 +54,6 @@ fun HuertoHogarMobilesTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
