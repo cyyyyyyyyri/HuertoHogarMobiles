@@ -12,10 +12,11 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS) // Recomendado
     repositories {
-        google()
-        mavenCentral()
+        google()       // Repositorio de Google (Necesario para AndroidX, Maps, etc.)
+        mavenCentral() // Repositorio central de Maven (Necesario para Moshi, Retrofit, OkHttp)
+        // Añade cualquier otro repositorio que puedas necesitar (ej: jitpack)
     }
 }
 

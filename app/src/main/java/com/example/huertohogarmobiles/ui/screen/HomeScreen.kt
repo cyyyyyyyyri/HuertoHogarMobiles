@@ -10,15 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.huertohogarmobiles.data.repository.CarritoRepository
-import com.example.huertohogarmobiles.data.repository.ProductoRepositoryImpl
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.huertohogarmobiles.domain.model.Producto
 import com.example.huertohogarmobiles.ui.viewmodel.ProductoViewModel
-import com.example.huertohogarmobiles.ui.viewmodel.ProductoViewModelFactory
-
 
 @Composable
-fun ProductoCard(producto: com.example.huertohogarmobiles.domain.model.Producto, onClick: (Int) -> Unit) {
+fun ProductoCard(producto: Producto, onClick: (Int) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -44,35 +41,19 @@ fun ProductoCard(producto: com.example.huertohogarmobiles.domain.model.Producto,
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    productoRepository: ProductoRepositoryImpl,
-    carritoRepository: CarritoRepository,
     onProductoClick: (Int) -> Unit,
     onCarritoClick: () -> Unit,
     onRegistroClick: () -> Unit,
-    onVolverPortada: () -> Unit
+    onVolverPortada: () -> Unit,
+    productoViewModel: ProductoViewModel = hiltViewModel() // Inyección de ViewModel con Hilt
 ) {
-    // 1. Obtener/Crear ViewModel
-    val viewModel: ProductoViewModel = viewModel(
-        factory = ProductoViewModelFactory(productoRepository)
-    )
+    val uiState by productoViewModel.uiState.collectAsState()
 
-    // 2. Observar el estado de la UI (Flow -> State)
-    val uiState by viewModel.uiState.collectAsState()
-
-    // 3. Estados locales para filtros
     var textoBusqueda by remember { mutableStateOf("") }
-    val categoriaSeleccionada by remember { mutableStateOf<String?>(null) } // Variable de estado no usada en el filtro simple
 
-    // 4. Lógica de Filtrado
-    val productosFiltrados = remember(uiState.productos, textoBusqueda, categoriaSeleccionada) {
-        uiState.productos.filter { producto ->
-            val coincideTexto = textoBusqueda.isBlank() ||
-                    producto.nombre.contains(textoBusqueda, ignoreCase = true)
-
-            val coincideCategoria = categoriaSeleccionada == null ||
-                    producto.categoria == categoriaSeleccionada // Asumiendo que producto tiene una propiedad 'categoria'
-
-            coincideTexto && coincideCategoria
+    val productosFiltrados = remember(uiState.productos, textoBusqueda) {
+        uiState.productos.filter {
+            textoBusqueda.isBlank() || it.nombre.contains(textoBusqueda, ignoreCase = true)
         }
     }
 
@@ -96,7 +77,7 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        when { // Manejo de estados (Cargando, Error, Éxito)
+        when {
             uiState.estaCargando -> {
                 Box(Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
@@ -109,7 +90,6 @@ fun HomeScreen(
             }
             else -> {
                 Column(Modifier.padding(paddingValues)) {
-                    // Campo de búsqueda
                     OutlinedTextField(
                         value = textoBusqueda,
                         onValueChange = { textoBusqueda = it },
@@ -118,7 +98,6 @@ fun HomeScreen(
                         leadingIcon = { Icon(Icons.Default.Search, null) }
                     )
 
-                    // Lista de productos
                     LazyColumn {
                         items(productosFiltrados) { producto ->
                             ProductoCard(

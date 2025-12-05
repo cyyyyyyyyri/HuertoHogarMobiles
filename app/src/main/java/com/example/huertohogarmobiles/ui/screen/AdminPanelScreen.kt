@@ -13,11 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.huertohogarmobiles.domain.model.Producto
+import com.example.huertohogarmobiles.ui.viewmodel.AdminViewModel
 
-// --- COMPONENTES AUXILIARES ---
-
-// Tarjeta para mostrar un producto en la lista de administración
 @Composable
 fun AdminProductoCard(
     producto: Producto,
@@ -41,11 +40,9 @@ fun AdminProductoCard(
                 Text("Stock: ${producto.stock} | Precio: $${producto.precio} CLP", style = MaterialTheme.typography.bodySmall)
             }
             Row {
-                // Botón Editar
                 IconButton(onClick = onEditar) {
                     Icon(Icons.Default.Edit, "Editar")
                 }
-                // Botón Eliminar
                 IconButton(onClick = onEliminar) {
                     Icon(Icons.Default.Delete, "Eliminar")
                 }
@@ -54,7 +51,6 @@ fun AdminProductoCard(
     }
 }
 
-// Panel para la pestaña de estadísticas
 @Composable
 fun EstadisticasPanel(productos: List<Producto>) {
     Column(Modifier.padding(16.dp)) {
@@ -62,39 +58,36 @@ fun EstadisticasPanel(productos: List<Producto>) {
         Spacer(modifier = Modifier.height(8.dp))
         Text("Total de Productos: ${productos.size}")
         Text("Categorías Únicas: ${productos.distinctBy { it.categoria }.size}")
-        // Aquí puedes añadir métricas más avanzadas si las implementas
     }
 }
-
-// --- PANTALLA PRINCIPAL ---
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminPanelScreen(
-    productos: List<Producto>,
-    usernameAdmin: String,
     onAgregarProducto: () -> Unit,
     onEditarProducto: (Producto) -> Unit,
-    onEliminarProducto: (Producto) -> Unit,
-    onCerrarSesion: () -> Unit // Callback para cerrar sesión
+    onCerrarSesion: () -> Unit,
+    viewModel: AdminViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     var tabSeleccionada by remember { mutableStateOf(0) }
-    var productoAEliminar by remember { mutableStateOf<Producto?>(null) } // Controla el estado del diálogo
+    var productoAEliminar by remember { mutableStateOf<Producto?>(null) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Panel Admin - $usernameAdmin") },
+                title = { Text("Panel Admin - ${uiState.username}") },
                 actions = {
-                    TextButton(onClick = onCerrarSesion) {
-                        // ✅ CORRECCIÓN VISIBILIDAD: Usamos el color de Error para destacar la acción de salida.
+                    TextButton(onClick = {
+                        viewModel.cerrarSesion()
+                        onCerrarSesion()
+                    }) {
                         Text("Cerrar Sesión", color = MaterialTheme.colorScheme.error)
                     }
                 }
             )
         },
         floatingActionButton = {
-            // FAB visible solo en la pestaña de Productos (tab 0)
             if (tabSeleccionada == 0) {
                 FloatingActionButton(onClick = onAgregarProducto) {
                     Icon(Icons.Default.Add, "Agregar Producto")
@@ -103,7 +96,6 @@ fun AdminPanelScreen(
         }
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
-            // Pestañas (TabRow)
             TabRow(selectedTabIndex = tabSeleccionada) {
                 Tab(
                     selected = tabSeleccionada == 0,
@@ -117,29 +109,25 @@ fun AdminPanelScreen(
                 )
             }
 
-            // Contenido de las pestañas
             when (tabSeleccionada) {
                 0 -> {
-                    // Lista de productos
                     LazyColumn {
-                        items(productos) { producto ->
+                        items(uiState.productos) { producto ->
                             AdminProductoCard(
                                 producto = producto,
                                 onEditar = { onEditarProducto(producto) },
-                                onEliminar = { productoAEliminar = producto } // Abre el AlertDialog
+                                onEliminar = { productoAEliminar = producto }
                             )
                         }
                     }
                 }
                 1 -> {
-                    // Panel de estadísticas
-                    EstadisticasPanel(productos = productos)
+                    EstadisticasPanel(productos = uiState.productos)
                 }
             }
         }
     }
 
-    // AlertDialog para confirmar eliminación
     productoAEliminar?.let { producto ->
         AlertDialog(
             onDismissRequest = { productoAEliminar = null },
@@ -148,8 +136,8 @@ fun AdminPanelScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        onEliminarProducto(producto) // Llama al ViewModel para eliminar
-                        productoAEliminar = null // Cierra el diálogo
+                        viewModel.eliminarProducto(producto)
+                        productoAEliminar = null
                     }
                 ) {
                     Text("Eliminar")

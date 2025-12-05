@@ -13,21 +13,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.huertohogarmobiles.ui.viewmodel.LoginAdminViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginAdminScreen(
     onLoginExitoso: () -> Unit,
     onVolverClick: () -> Unit,
-    // Callbacks provistos por NavGraph (usan PreferenciasManager)
-    onValidarCredenciales: (String, String) -> Boolean,
-    onGuardarSesion: (String) -> Unit
+    viewModel: LoginAdminViewModel = hiltViewModel()
 ) {
-    // Estados de los campos del formulario
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var mostrarPassword by remember { mutableStateOf(false) }
-    var mensajeError by remember { mutableStateOf<String?>(null) } // null = sin error
+    var mensajeError by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
@@ -58,12 +57,11 @@ fun LoginAdminScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Campo de Usuario
             OutlinedTextField(
                 value = username,
                 onValueChange = {
                     username = it
-                    mensajeError = null // Limpiar error al escribir
+                    mensajeError = null
                 },
                 label = { Text("Usuario") },
                 modifier = Modifier.fillMaxWidth()
@@ -71,26 +69,18 @@ fun LoginAdminScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo de Contraseña
             OutlinedTextField(
                 value = password,
                 onValueChange = {
                     password = it
-                    mensajeError = null // Limpiar error al escribir
+                    mensajeError = null
                 },
                 label = { Text("Contraseña") },
-                // Ocultar caracteres
-                visualTransformation = if (mostrarPassword) {
-                    VisualTransformation.None
-                } else {
-                    PasswordVisualTransformation()
-                },
-                // Ícono para mostrar/ocultar contraseña
+                visualTransformation = if (mostrarPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { mostrarPassword = !mostrarPassword }) {
                         Icon(
-                            if (mostrarPassword) Icons.Default.Visibility
-                            else Icons.Default.VisibilityOff,
+                            if (mostrarPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                             "Toggle password"
                         )
                     }
@@ -98,7 +88,6 @@ fun LoginAdminScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Mostrar mensaje de error si existe
             mensajeError?.let {
                 Text(
                     text = it,
@@ -109,14 +98,13 @@ fun LoginAdminScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botón de Ingreso
             Button(
                 onClick = {
                     if (username.isBlank() || password.isBlank()) {
                         mensajeError = "Completa todos los campos"
-                    } else if (onValidarCredenciales(username, password)) {
-                        onGuardarSesion(username) // Guarda la sesión en PreferenciasManager
-                        onLoginExitoso() // Navega al Panel Admin
+                    } else if (viewModel.validarCredenciales(username, password)) {
+                        viewModel.guardarSesion(username)
+                        onLoginExitoso()
                     } else {
                         mensajeError = "Credenciales incorrectas"
                     }

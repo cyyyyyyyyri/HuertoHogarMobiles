@@ -16,28 +16,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.huertohogarmobiles.ui.viewmodel.RegistroViewModel
-import com.example.huertohogarmobiles.ui.viewmodel.RegistroViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroScreen(
-    // Estos callbacks deben ser llamados desde NavGraph.kt
     onRegistroExitoso: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: RegistroViewModel = hiltViewModel()
 ) {
-    // 1. Obtener/Crear ViewModel usando la Factory
-    val viewModel: RegistroViewModel = viewModel(factory = RegistroViewModelFactory())
-
-    // 2. Observar el estado de la UI
     val uiState by viewModel.uiState.collectAsState()
 
-    // Estados locales para mostrar/ocultar contraseña
     var mostrarPassword by remember { mutableStateOf(false) }
     var mostrarConfirmarPassword by remember { mutableStateOf(false) }
 
-    // Efecto para navegar después de un registro exitoso
     LaunchedEffect(uiState.registroExitoso) {
         if (uiState.registroExitoso) {
             onRegistroExitoso()
@@ -60,11 +53,10 @@ fun RegistroScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()) // Permite deslizar si es largo
+                .verticalScroll(rememberScrollState())
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Campo Nombre Completo
             OutlinedTextField(
                 value = uiState.formulario.nombreCompleto,
                 onValueChange = viewModel::onNombreChange,
@@ -75,7 +67,6 @@ fun RegistroScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Email
             OutlinedTextField(
                 value = uiState.formulario.email,
                 onValueChange = viewModel::onEmailChange,
@@ -86,7 +77,6 @@ fun RegistroScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Teléfono
             OutlinedTextField(
                 value = uiState.formulario.telefono,
                 onValueChange = viewModel::onTelefonoChange,
@@ -97,7 +87,6 @@ fun RegistroScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Dirección
             OutlinedTextField(
                 value = uiState.formulario.direccion,
                 onValueChange = viewModel::onDireccionChange,
@@ -108,7 +97,6 @@ fun RegistroScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Contraseña
             OutlinedTextField(
                 value = uiState.formulario.password,
                 onValueChange = viewModel::onPasswordChange,
@@ -121,7 +109,6 @@ fun RegistroScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Confirmar Contraseña
             OutlinedTextField(
                 value = uiState.formulario.confirmarPassword,
                 onValueChange = viewModel::onConfirmarPasswordChange,
@@ -134,7 +121,6 @@ fun RegistroScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Checkbox Aceptar Términos
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -148,16 +134,14 @@ fun RegistroScreen(
                     modifier = Modifier.clickable { viewModel.onAceptaTerminosChange(!uiState.formulario.aceptaTerminos) }
                 )
             }
-            // Mostrar error de términos (debajo del checkbox)
             MostrarError(uiState.errores.terminosError, Modifier.fillMaxWidth().padding(start = 16.dp))
 
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botón de Registro
             Button(
                 onClick = viewModel::intentarRegistro,
-                enabled = !uiState.estaRegistrando, // Deshabilitar si está cargando
+                enabled = !uiState.estaRegistrando,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -169,7 +153,6 @@ fun RegistroScreen(
                 }
             }
 
-            // Mostrar error general (si existe)
             if (uiState.errorGeneral != null) {
                 Text(
                     uiState.errorGeneral!!,
@@ -181,18 +164,15 @@ fun RegistroScreen(
     }
 }
 
-// Composable auxiliar para mostrar el mensaje de error
 @Composable
 private fun MostrarError(mensaje: String?, modifier: Modifier = Modifier) {
     if (mensaje != null) {
         Text(mensaje, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall, modifier = modifier)
     } else {
-        // Asegura que el espacio se reserve incluso sin mensaje
         Spacer(modifier = modifier.height(20.dp))
     }
 }
 
-// Composable auxiliar para el ícono de visibilidad de contraseña
 @Composable
 private fun TogglePasswordIcon(isVisible: Boolean, onClick: () -> Unit) {
     IconButton(onClick = onClick) {

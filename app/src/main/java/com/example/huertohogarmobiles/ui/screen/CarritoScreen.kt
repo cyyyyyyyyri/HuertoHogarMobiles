@@ -16,13 +16,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.huertohogarmobiles.data.repository.CarritoRepository
-import kotlinx.coroutines.launch
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.huertohogarmobiles.domain.model.ItemCarrito
+import com.example.huertohogarmobiles.ui.viewmodel.CarritoViewModel
 
-// Componente para un ítem individual del carrito
+
 @Composable
 fun CarritoItemCard(
-    item: com.example.huertohogarmobiles.domain.model.ItemCarrito,
+    item: ItemCarrito,
     onAumentarCantidad: () -> Unit,
     onDisminuirCantidad: () -> Unit,
     onEliminar: () -> Unit
@@ -38,17 +39,13 @@ fun CarritoItemCard(
             Text("Precio: $${item.producto.precio} CLP", style = MaterialTheme.typography.bodySmall)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // Botón Disminuir
             IconButton(onClick = onDisminuirCantidad) {
                 Icon(Icons.Default.Remove, "Disminuir")
             }
-            // Cantidad
             Text("${item.cantidad}", Modifier.width(20.dp), textAlign = TextAlign.Center)
-            // Botón Aumentar
             IconButton(onClick = onAumentarCantidad) {
                 Icon(Icons.Default.Add, "Aumentar")
             }
-            // Botón Eliminar
             IconButton(onClick = onEliminar) {
                 Icon(Icons.Default.Delete, "Eliminar")
             }
@@ -60,15 +57,11 @@ fun CarritoItemCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarritoScreen(
-    carritoRepository: CarritoRepository,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: CarritoViewModel = hiltViewModel()
 ) {
-    // Scope necesario para llamar suspend functions del repositorio
-    val scope = rememberCoroutineScope()
-
-    // Observar los Flows del repositorio
-    val items by carritoRepository.obtenerCarrito().collectAsState(initial = emptyList())
-    val total by carritoRepository.obtenerTotal().collectAsState(initial = 0.0)
+    val items by viewModel.carrito.collectAsState()
+    val total by viewModel.total.collectAsState()
 
     Scaffold(
         topBar = {
@@ -88,48 +81,32 @@ fun CarritoScreen(
                 .padding(paddingValues)
         ) {
             if (items.isEmpty()) {
-                // Carrito vacío
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Tu carrito está vacío", Modifier.align(Alignment.Center))
                 }
             } else {
-                // Lista de items
                 LazyColumn(Modifier.weight(1f)) {
                     items(items) { item ->
                         CarritoItemCard(
                             item = item,
-                            onAumentarCantidad = {
-                                scope.launch { // Ejecuta operación en el scope
-                                    carritoRepository.modificarCantidad(item.producto.id, item.cantidad + 1)
-                                }
-                            },
-                            onDisminuirCantidad = {
-                                scope.launch {
-                                    carritoRepository.modificarCantidad(item.producto.id, item.cantidad - 1)
-                                }
-                            },
-                            onEliminar = {
-                                scope.launch {
-                                    carritoRepository.eliminarProducto(item.producto.id)
-                                }
-                            }
+                            onAumentarCantidad = { viewModel.modificarCantidad(item.producto.id, item.cantidad + 1) },
+                            onDisminuirCantidad = { viewModel.modificarCantidad(item.producto.id, item.cantidad - 1) },
+                            onEliminar = { viewModel.eliminarProducto(item.producto.id) }
                         )
                     }
                 }
-
-                // Total y botón de compra (Fijo en la parte inferior)
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(8.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
-                            "Total: $${total.toInt()} CLP", // Mostrar total
+                            "Total: $${total.toInt()} CLP",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Button(
-                            onClick = { /* Procesar compra */ },
+                            onClick = { /* Lógica de compra */ },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text("COMPRAR")
