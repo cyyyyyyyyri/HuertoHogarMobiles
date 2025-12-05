@@ -13,34 +13,34 @@ import kotlinx.coroutines.flow.catch // Manejo de errores en el Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-/**
- * ProductoViewModel: Gestiona el estado de los productos (carga, éxito, error).
- * Sobrevive a rotaciones de pantalla. [cite: 54, 143]
- */
+
+ // ProductoViewModel: Gestiona el estado de los productos (carga, éxito, error).
+
+
 class ProductoViewModel(
-    private val repositorio: ProductoRepositoryImpl // Se inyecta la implementación concreta
+    private val repositorio: ProductoRepositoryImpl
 ) : ViewModel() {
 
-    // _uiState: privado, solo el ViewModel puede modificarlo (MutableStateFlow)
+
     private val _uiState = MutableStateFlow(ProductoUiState())
 
-    // uiState: público, solo lectura para la UI (StateFlow)
+
     val uiState: StateFlow<ProductoUiState> = _uiState.asStateFlow()
 
     init {
-        // Cargar productos inmediatamente al crearse el ViewModel [cite: 67]
+        // Cargar productos inmediatamente al crearse el ViewModel
         cargarProductos()
     }
 
     /**
-     * Carga la lista de productos desde el repositorio y actualiza el UiState.
+     * carga la lista de productos desde el repositorio y actualiza el uistate.
      */
     fun cargarProductos() {
         viewModelScope.launch {
-            // 1. Indicar que está cargando (Usando copy para inmutabilidad)
+            // Indicar que está cargando
             _uiState.value = _uiState.value.copy(
                 estaCargando = true,
-                error = null // Limpiar error si se está recargando
+                error = null
             )
 
             // 2. Observar Flow de Room y manejar resultados
@@ -48,50 +48,39 @@ class ProductoViewModel(
                 .catch { exception ->
                     _uiState.value = _uiState.value.copy(
                         estaCargando = false,
-                        productos = emptyList(), // Vaciar lista en caso de error
+                        productos = emptyList(),
                         error = exception.message ?: "Error desconocido al cargar productos"
                     )
                 }
-                .collect { productos -> // Bloque para recolectar datos (Éxito)
+                .collect { productos ->
                     _uiState.value = _uiState.value.copy(
                         estaCargando = false,
                         productos = productos,
-                        error = null // Limpiar error
+                        error = null
                     )
                 }
         }
     }
 
-    // --- Funciones CRUD para el Administrador ---
+    // Funciones para el Administrador
 
-    // La mayoría de estas funciones solo invocan al repositorio dentro de un viewModelScope.launch.
-
-    /**
-     * Busca un producto por ID.
-     */
     suspend fun obtenerProductoPorId(id: Int) = repositorio.obtenerProductoPorId(id)
 
-    /**
-     * Agrega un nuevo producto (Admin).
-     */
+
     fun agregarProducto(producto: Producto) {
         viewModelScope.launch {
             repositorio.insertarProducto(producto)
         }
     }
 
-    /**
-     * Actualiza un producto existente (Admin).
-     */
+
     fun actualizarProducto(producto: Producto) {
         viewModelScope.launch {
             repositorio.actualizarProducto(producto)
         }
     }
 
-    /**
-     * Elimina un producto (Admin).
-     */
+
     fun eliminarProducto(producto: Producto) {
         viewModelScope.launch {
             repositorio.eliminarProducto(producto)
@@ -99,10 +88,6 @@ class ProductoViewModel(
     }
 }
 
-/**
- * Factory: Crea instancias del ViewModel permitiendo inyectar el repositorio.
- * Esto es necesario ya que el ViewModel tiene parámetros en el constructor. [cite: 128, 146]
- */
 class ProductoViewModelFactory(
     private val repositorio: ProductoRepositoryImpl
 ) : ViewModelProvider.Factory {
@@ -111,7 +96,7 @@ class ProductoViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         // Verifica que la clase sea ProductoViewModel
         if (modelClass.isAssignableFrom(ProductoViewModel::class.java)) {
-            return ProductoViewModel(repositorio) as T // Crea la instancia con el repositorio
+            return ProductoViewModel(repositorio) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

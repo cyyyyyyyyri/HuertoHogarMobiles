@@ -8,14 +8,11 @@ import com.example.huertohogarmobiles.domain.model.Producto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-/**
- * Repository del carrito - Gestiona la lógica de añadir, modificar y obtener items.
- */
+ //Gestiona la lógica de añadir, modificar y obtener items.
+ // Contiene la lógica real para acceder a la base de datos (Room/DAO) y manipular los datos.
 class CarritoRepository(private val carritoDao: CarritoDao) {
 
-    /**
-     * Obtiene todos los items del carrito, mapeados a ItemCarrito (incluye cantidad).
-     */
+
     fun obtenerCarrito(): Flow<List<ItemCarrito>> {
         return carritoDao.obtenerTodo()
             .map { entities ->
@@ -28,11 +25,9 @@ class CarritoRepository(private val carritoDao: CarritoDao) {
             }
     }
 
-    /**
-     * Agrega o incrementa la cantidad de un producto.
-     */
+
     suspend fun agregarProducto(producto: Producto, cantidad: Int = 1) {
-        // Paso 1: Buscar si ya existe
+
         val existente = carritoDao.obtenerPorProductoId(producto.id)
 
         if (existente != null) {

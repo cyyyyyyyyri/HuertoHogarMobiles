@@ -9,19 +9,16 @@ import com.example.huertohogarmobiles.data.local.dao.ProductoDao
 import com.example.huertohogarmobiles.data.local.entity.CarritoEntity
 import com.example.huertohogarmobiles.data.local.entity.ProductoEntity
 
-/**
- * Database principal de la app (HuertoHogar)
- * Singleton para una única instancia en toda la app.
- */
+//Database principal
+
 @Database(
-    // Listado de todas las Entidades (tablas)
     entities = [CarritoEntity::class, ProductoEntity::class],
-    version = 2, // Versión 2 porque incluimos CarritoEntity y ProductoEntity
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    // Abstract functions para acceder a los DAOs
+    // Funciones para acceder a los DAOs
     abstract fun carritoDao(): CarritoDao
     abstract fun productoDao(): ProductoDao
 
@@ -29,19 +26,17 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        /**
-         * Obtiene instancia única de la base de datos (Singleton).
-         */
+
         fun getDatabase(context: Context): AppDatabase {
-            // Si la instancia ya existe, la retorna
+
             return INSTANCE ?: synchronized(this) {
-                // Si no existe, crea una nueva
+
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "huertohogar_database" // Nombre del archivo de base de datos
+                    "huertohogar_database"
                 )
-                    .fallbackToDestructiveMigration() // Destruye y recrea la BD si la versión cambia
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

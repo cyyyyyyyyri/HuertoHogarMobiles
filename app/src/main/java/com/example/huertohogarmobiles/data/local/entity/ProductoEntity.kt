@@ -15,7 +15,7 @@ data class ProductoEntity(
     val id: Int = 0,
     val nombre: String,
     val descripcion: String,
-    val precio: Double, // Precio en CLP
+    val precio: Double,
     val imagenUrl: String, // URL para Coil
     val categoria: String, // Ej: Frutas Frescas, Verduras Orgánicas
     val stock: Int // Disponibilidad
@@ -25,6 +25,7 @@ data class ProductoEntity(
  * Función de extensión: Convierte la entidad de base de datos (ProductoEntity)
  * al modelo de dominio (Producto).
  */
+// ¡ERROR CORREGIDO AQUÍ!
 fun ProductoEntity.toProducto() = Producto(
     id = id,
     nombre = nombre,

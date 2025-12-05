@@ -2,12 +2,7 @@ package com.example.huertohogarmobiles.ui.state
 
 import com.example.huertohogarmobiles.domain.model.Producto
 
-/**
- * Estado de la UI de productos
- * Usa data class simple (sin sealed class)
- *
- * Autor: Prof. Sting Adams Parra Silva
- */
+
 data class ProductoUiState(
     val estaCargando: Boolean = false,
     val productos: List<Producto> = emptyList(),

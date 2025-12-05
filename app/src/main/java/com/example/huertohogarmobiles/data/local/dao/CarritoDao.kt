@@ -6,10 +6,7 @@ import androidx.room.Query
 import com.example.huertohogarmobiles.data.local.entity.CarritoEntity
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Data Access Object para tabla carrito (HuertoHogar)
- * Define las operaciones SQL disponibles.
- */
+// Operaciones para carrito en la bd
 @Dao
 interface CarritoDao {
 

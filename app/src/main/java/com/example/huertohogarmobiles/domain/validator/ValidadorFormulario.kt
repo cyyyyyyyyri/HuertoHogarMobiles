@@ -3,12 +3,9 @@ package com.example.huertohogarmobiles.domain.validator
 import com.example.huertohogarmobiles.domain.model.ErroresFormulario
 import com.example.huertohogarmobiles.domain.model.FormularioRegistro
 
-/**
- * Lógica de validación de negocio para el formulario de registro.
- */
+// esto contiene la logica de validacion del formulario de registro
 object ValidadorFormulario {
 
-    // --- Validadores de campo individual ---
 
     fun validarNombreCompleto(nombre: String): String? {
         return if (nombre.isBlank() || !nombre.contains(" ")) {
@@ -25,7 +22,7 @@ object ValidadorFormulario {
     }
 
     fun validarTelefono(telefono: String): String? {
-        // Validación básica de 8 dígitos numéricos
+
         return if (telefono.length != 8 || !telefono.all { it.isDigit() }) {
             "El teléfono debe ser numérico y tener 8 dígitos."
         } else null
@@ -55,7 +52,6 @@ object ValidadorFormulario {
         } else null
     }
 
-    // --- Validador del formulario completo ---
 
     fun validarFormulario(form: FormularioRegistro): ErroresFormulario {
         val nombreError = validarNombreCompleto(form.nombreCompleto)

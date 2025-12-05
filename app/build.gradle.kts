@@ -78,6 +78,11 @@ dependencies {
     // Accompanist Permissions
     implementation(libs.accompanist.permissions)
 
+    // Google Maps y Servicios de Ubicación
+    implementation("com.google.maps.android:maps-compose:4.3.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
