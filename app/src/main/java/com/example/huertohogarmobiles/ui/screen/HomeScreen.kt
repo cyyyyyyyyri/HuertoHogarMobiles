@@ -45,10 +45,9 @@ fun HomeScreen(
     onCarritoClick: () -> Unit,
     onRegistroClick: () -> Unit,
     onVolverPortada: () -> Unit,
-    productoViewModel: ProductoViewModel = hiltViewModel() // Inyección de ViewModel con Hilt
+    productoViewModel: ProductoViewModel = hiltViewModel()
 ) {
     val uiState by productoViewModel.uiState.collectAsState()
-
     var textoBusqueda by remember { mutableStateOf("") }
 
     val productosFiltrados = remember(uiState.productos, textoBusqueda) {

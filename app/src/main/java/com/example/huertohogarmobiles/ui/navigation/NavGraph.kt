@@ -30,7 +30,6 @@ fun NavGraph(
         // Home
         composable(route = Rutas.HOME) {
             HomeScreen(
-                // Los ViewModels se inyectan DENTRO de HomeScreen con hiltViewModel()
                 onProductoClick = { id -> navController.navigate(Rutas.detalleConId(id)) },
                 onCarritoClick = { navController.navigate(Rutas.CARRITO) },
                 onRegistroClick = { navController.navigate(Rutas.REGISTRO) },
