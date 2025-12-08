@@ -5,6 +5,7 @@ import com.example.huertohogarmobiles.data.local.AppDatabase
 import com.example.huertohogarmobiles.data.local.PreferenciasManager
 import com.example.huertohogarmobiles.data.local.dao.CarritoDao
 import com.example.huertohogarmobiles.data.local.dao.ProductoDao
+import com.example.huertohogarmobiles.data.remote.api.ProductApiService
 import com.example.huertohogarmobiles.data.repository.CarritoRepositoryImpl
 import com.example.huertohogarmobiles.data.repository.ProductoRepositoryImpl
 import com.example.huertohogarmobiles.domain.repository.CarritoRepository
@@ -46,13 +47,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideProductoRepository(productoDao: ProductoDao): ProductoRepository {
-        return ProductoRepositoryImpl(productoDao)
+    fun provideProductoRepository(
+        productoDao: ProductoDao,
+        apiService: ProductApiService
+    ): ProductoRepository {
+        return ProductoRepositoryImpl(productoDao, apiService)
     }
 
     @Provides
     @Singleton
     fun provideCarritoRepository(carritoDao: CarritoDao): CarritoRepository {
+        // Aquí es donde ocurría el error: ahora ya existe CarritoRepositoryImpl
         return CarritoRepositoryImpl(carritoDao)
     }
 }
