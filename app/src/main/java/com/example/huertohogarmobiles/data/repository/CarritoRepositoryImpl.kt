@@ -1,8 +1,8 @@
 package com.example.huertohogarmobiles.data.repository
 
 import com.example.huertohogarmobiles.data.local.dao.CarritoDao
-import com.example.huertohogarmobiles.data.local.entity.toEntity // Asegúrate de tener este mapper o import
-import com.example.huertohogarmobiles.data.local.entity.toItemCarrito // Asegúrate de tener este mapper o import
+import com.example.huertohogarmobiles.data.local.entity.toEntity       // Asegúrate de tener este mapper
+import com.example.huertohogarmobiles.data.local.entity.toItemCarrito   // Asegúrate de tener este mapper
 import com.example.huertohogarmobiles.domain.model.ItemCarrito
 import com.example.huertohogarmobiles.domain.repository.CarritoRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,27 +14,30 @@ class CarritoRepositoryImpl @Inject constructor(
 ) : CarritoRepository {
 
     override fun obtenerCarrito(): Flow<List<ItemCarrito>> {
-        return carritoDao.obtenerCarrito().map { entities ->
+        return carritoDao.obtenerTodo().map { entities ->
             entities.map { it.toItemCarrito() }
         }
     }
 
+    override fun obtenerTotal(): Flow<Double> {
+        return carritoDao.obtenerTotal().map { total ->
+            total ?: 0.0
+        }
+    }
+
     override suspend fun agregarItem(item: ItemCarrito) {
-        // Asumiendo que tu DAO tiene un método insertar o agregar
-        carritoDao.insertarItem(item.toEntity())
+        carritoDao.insertar(item.toEntity())
     }
 
-    override suspend fun actualizarCantidad(item: ItemCarrito, cantidad: Int) {
-        // Puedes implementar lógica aquí o llamar al DAO
-        val itemActualizado = item.copy(cantidad = cantidad)
-        carritoDao.actualizarItem(itemActualizado.toEntity())
+    override suspend fun actualizarCantidad(productoId: Int, cantidad: Int) {
+        carritoDao.actualizarCantidad(productoId, cantidad)
     }
 
-    override suspend fun eliminarItem(item: ItemCarrito) {
-        carritoDao.eliminarItem(item.toEntity())
+    override suspend fun eliminarItem(productoId: Int) {
+        carritoDao.eliminarProducto(productoId)
     }
 
     override suspend fun vaciarCarrito() {
-        carritoDao.vaciarCarrito()
+        carritoDao.vaciar()
     }
 }

@@ -2,6 +2,7 @@ package com.example.huertohogarmobiles.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.huertohogarmobiles.domain.model.ItemCarrito
 import com.example.huertohogarmobiles.domain.model.Producto
 
 /**
@@ -23,8 +24,7 @@ data class CarritoEntity(
 )
 
 /**
- * Función de extensión: Convierte CarritoEntity a Producto (Modelo de Dominio).
- * Esto simplifica la información para la lógica de negocio.
+ * Convierte CarritoEntity a Producto (Modelo de Dominio).
  */
 fun CarritoEntity.toDomain(): Producto {
     return Producto(
@@ -35,5 +35,33 @@ fun CarritoEntity.toDomain(): Producto {
         imagenUrl = imagenUrl,
         categoria = categoria,
         stock = stock
+    )
+}
+
+/**
+ * Convierte CarritoEntity a ItemCarrito (Modelo de Dominio con cantidad).
+ * Esta es la función que te faltaba y causaba el error.
+ */
+fun CarritoEntity.toItemCarrito(): ItemCarrito {
+    return ItemCarrito(
+        producto = this.toDomain(), // Reutilizamos la conversión a Producto
+        cantidad = this.cantidad
+    )
+}
+
+/**
+ * Convierte ItemCarrito a CarritoEntity (Para guardar en Base de Datos).
+ * Esta función es necesaria para cuando haces 'insertar' en el repositorio.
+ */
+fun ItemCarrito.toEntity(): CarritoEntity {
+    return CarritoEntity(
+        productoId = producto.id,
+        nombre = producto.nombre,
+        descripcion = producto.descripcion,
+        precio = producto.precio,
+        imagenUrl = producto.imagenUrl,
+        categoria = producto.categoria,
+        stock = producto.stock,
+        cantidad = cantidad
     )
 }
