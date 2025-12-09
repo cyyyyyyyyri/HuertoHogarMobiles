@@ -2,6 +2,7 @@ package com.example.huertohogarmobiles
 
 import com.example.huertohogarmobiles.domain.model.Producto
 import org.junit.Before
+import kotlin.test.Test
 
 class ProductoTest {
 
