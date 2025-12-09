@@ -137,17 +137,15 @@ fun DetalleProductoScreen(
                             onClick = {
                                 if (p.stock > 0 && cantidadAComprar > 0) {
                                     scope.launch {
-                                        // Asegúrate de que esta función exista en CarritoViewModel
-                                        // En tu código anterior no estaba, agrégala si falta:
-                                        // fun agregarProducto(producto: Producto, cantidad: Int) { ... }
-                                        // Si no la tienes, usa el repositorio directamente o agrégala al VM.
-                                        // Por ahora asumo que la agregarás al CarritoViewModel.
-                                        // carritoViewModel.agregarProducto(p, cantidadAComprar)
+                                        carritoViewModel.agregarProducto(p, cantidadAComprar)
+                                        snackbarHostState.showSnackbar("Producto añadido al carrito")
                                     }
                                 }
                             },
                             enabled = p.stock > 0 && cantidadAComprar > 0,
-                            modifier = Modifier.weight(1f).padding(start = 16.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 16.dp)
                         ) {
                             Text("Añadir al Carrito")
                         }

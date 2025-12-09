@@ -2,43 +2,48 @@ package com.example.huertohogarmobiles.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.huertohogarmobiles.domain.repository.CarritoRepository
 import com.example.huertohogarmobiles.domain.model.ItemCarrito
+import com.example.huertohogarmobiles.domain.model.Producto
+import com.example.huertohogarmobiles.domain.repository.CarritoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CarritoViewModel @Inject constructor(
-    private val repository: CarritoRepository
+    private val repositorio: CarritoRepository
 ) : ViewModel() {
 
-    val carrito = repository.obtenerCarrito()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    val carrito = repositorio.obtenerCarrito()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    val total = repository.obtenerTotal()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = 0.0
-        )
+    val total = repositorio.obtenerTotal()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0.0)
 
-    fun modificarCantidad(productoId: Int, nuevaCantidad: Int) {
+    fun agregarProducto(producto: Producto, cantidad: Int) {
         viewModelScope.launch {
-            repository.actualizarCantidad(productoId, nuevaCantidad)
+            val item = ItemCarrito(producto, cantidad)
+            repositorio.agregarItem(item)
         }
     }
 
-    fun eliminarProducto(productoId: Int) {
+    fun modificarCantidad(productoId: Int, nuevaCantidad: Int) {
         viewModelScope.launch {
-            repository.eliminarItem(productoId)
+            repositorio.actualizarCantidad(productoId, nuevaCantidad)
+        }
+    }
+
+    fun eliminarProducto(id: Int) {
+        viewModelScope.launch {
+            repositorio.eliminarItem(id)
+        }
+    }
+
+    fun vaciarCarrito() {
+        viewModelScope.launch {
+            repositorio.vaciarCarrito()
         }
     }
 }

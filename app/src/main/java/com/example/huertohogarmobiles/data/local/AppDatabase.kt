@@ -55,7 +55,7 @@ abstract class AppDatabase : RoomDatabase() {
 
             // Ejecutar en background
             CoroutineScope(Dispatchers.IO).launch {
-                INSTANCE?.productoDao()?.insertarProductosIniciales(
+                INSTANCE?.productoDao()?.insertarProductos(
                     productosIniciales()
                 )
             }

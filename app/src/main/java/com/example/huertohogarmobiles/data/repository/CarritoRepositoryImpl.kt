@@ -1,8 +1,8 @@
 package com.example.huertohogarmobiles.data.repository
 
 import com.example.huertohogarmobiles.data.local.dao.CarritoDao
-import com.example.huertohogarmobiles.data.local.entity.toEntity       // Asegúrate de tener este mapper
-import com.example.huertohogarmobiles.data.local.entity.toItemCarrito   // Asegúrate de tener este mapper
+import com.example.huertohogarmobiles.data.local.entity.toEntity
+import com.example.huertohogarmobiles.data.local.entity.toItemCarrito
 import com.example.huertohogarmobiles.domain.model.ItemCarrito
 import com.example.huertohogarmobiles.domain.repository.CarritoRepository
 import kotlinx.coroutines.flow.Flow
@@ -10,34 +10,36 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CarritoRepositoryImpl @Inject constructor(
-    private val carritoDao: CarritoDao
+    private val dao: CarritoDao
 ) : CarritoRepository {
 
     override fun obtenerCarrito(): Flow<List<ItemCarrito>> {
-        return carritoDao.obtenerTodo().map { entities ->
-            entities.map { it.toItemCarrito() }
+        return dao.obtenerTodo().map { lista ->
+            lista.map { it.toItemCarrito() }
         }
     }
 
     override fun obtenerTotal(): Flow<Double> {
-        return carritoDao.obtenerTotal().map { total ->
-            total ?: 0.0
-        }
+        return dao.obtenerTotal().map { it ?: 0.0 }
     }
 
     override suspend fun agregarItem(item: ItemCarrito) {
-        carritoDao.insertar(item.toEntity())
+        dao.insertar(item.toEntity())
     }
 
     override suspend fun actualizarCantidad(productoId: Int, cantidad: Int) {
-        carritoDao.actualizarCantidad(productoId, cantidad)
+        if (cantidad <= 0) {
+            dao.eliminarProducto(productoId)
+        } else {
+            dao.actualizarCantidad(productoId, cantidad)
+        }
     }
 
     override suspend fun eliminarItem(productoId: Int) {
-        carritoDao.eliminarProducto(productoId)
+        dao.eliminarProducto(productoId)
     }
 
     override suspend fun vaciarCarrito() {
-        carritoDao.vaciar()
+        dao.vaciar()
     }
 }
