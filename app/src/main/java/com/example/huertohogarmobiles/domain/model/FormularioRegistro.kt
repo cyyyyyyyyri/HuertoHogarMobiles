@@ -10,7 +10,8 @@ data class FormularioRegistro(
     val direccion: String = "",
     val password: String = "",
     val confirmarPassword: String = "",
-    val aceptaTerminos: Boolean = false
+    val aceptaTerminos: Boolean = false,
+    val fotoPerfilUri: String? = null
 )
 
 /**

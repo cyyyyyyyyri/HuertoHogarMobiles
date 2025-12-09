@@ -49,6 +49,17 @@ class RegistroViewModel : ViewModel() { // No necesita repositorio, es más simp
         )
     }
 
+    fun onFotoPerfilChange(uri: String?) {
+        val nuevoFormulario = _uiState.value.formulario.copy(fotoPerfilUri = uri)
+        val nuevosErrores = ValidadorFormulario.validarFormulario(nuevoFormulario)
+
+        _uiState.value = _uiState.value.copy(
+            formulario = nuevoFormulario,
+            errores = nuevosErrores
+        )
+    }
+
+
     // --- Acción de Registro ---
 
     fun intentarRegistro() {
