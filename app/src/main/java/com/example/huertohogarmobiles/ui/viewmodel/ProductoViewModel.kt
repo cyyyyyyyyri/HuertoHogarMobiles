@@ -19,13 +19,22 @@ class ProductoViewModel @Inject constructor(
     private val repositorio: ProductoRepositoryImpl
 ) : ViewModel() {
 
+    // 1. Estado para la LISTA de productos (Home)
     private val _uiState = MutableStateFlow(ProductoUiState())
     val uiState: StateFlow<ProductoUiState> = _uiState.asStateFlow()
 
+    // 2. Estado para el producto INDIVIDUAL seleccionado (Detalle)
+    private val _productoSeleccionado = MutableStateFlow<Producto?>(null)
+    val productoSeleccionado: StateFlow<Producto?> = _productoSeleccionado.asStateFlow()
+
     init {
+        // Carga la lista general al iniciar
         cargarProductos()
     }
 
+    /**
+     * Carga la lista completa para el Home
+     */
     fun cargarProductos() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
@@ -51,6 +60,22 @@ class ProductoViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Carga un producto específico por ID para la pantalla de Detalle.
+     * Esta es la función que te faltaba.
+     */
+    fun cargarProductoPorId(id: Int) {
+        viewModelScope.launch {
+            // Reiniciamos el seleccionado para que no muestre el anterior mientras carga
+            _productoSeleccionado.value = null
+            val producto = repositorio.obtenerProductoPorId(id)
+            _productoSeleccionado.value = producto
+        }
+    }
+
+    // Funciones para el Administrador (suspend directas o launch)
+
+    // Esta la mantienes por si la usas en otro lado como suspend
     suspend fun obtenerProductoPorId(id: Int) = repositorio.obtenerProductoPorId(id)
 
     fun agregarProducto(producto: Producto) {

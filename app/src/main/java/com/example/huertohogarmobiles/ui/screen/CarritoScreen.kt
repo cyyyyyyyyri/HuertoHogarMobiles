@@ -2,9 +2,10 @@ package com.example.huertohogarmobiles.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
@@ -16,12 +17,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.huertohogarmobiles.domain.model.ItemCarrito
 import com.example.huertohogarmobiles.ui.viewmodel.CarritoViewModel
-
 
 @Composable
 fun CarritoItemCard(
-    item: Int,
+    item: ItemCarrito,
     onAumentarCantidad: () -> Unit,
     onDisminuirCantidad: () -> Unit,
     onEliminar: () -> Unit
@@ -49,7 +50,7 @@ fun CarritoItemCard(
             }
         }
     }
-    Divider()
+    HorizontalDivider()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,7 +68,7 @@ fun CarritoScreen(
                 title = { Text("Mi Carrito") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
                     }
                 }
             )

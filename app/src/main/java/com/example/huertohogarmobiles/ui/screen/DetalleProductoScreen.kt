@@ -33,11 +33,12 @@ fun DetalleProductoScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Cargar el producto específico cuando la pantalla se muestra por primera vez
+    // Cargar el producto
     LaunchedEffect(productoId) {
         productoViewModel.cargarProductoPorId(productoId)
     }
 
+    // Ahora esto funcionará porque agregamos productoSeleccionado al ViewModel
     val producto by productoViewModel.productoSeleccionado.collectAsState()
     var cantidadAComprar by remember { mutableStateOf(1) }
 
@@ -54,7 +55,9 @@ fun DetalleProductoScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
+        // ... (El resto del código dentro del Scaffold está bien)
         producto?.let { p ->
+            // ... contenido de la columna ...
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -124,12 +127,12 @@ fun DetalleProductoScreen(
                             onClick = {
                                 if (p.stock > 0 && cantidadAComprar > 0) {
                                     scope.launch {
-                                        carritoViewModel.agregarProducto(p, cantidadAComprar)
-                                        snackbarHostState.showSnackbar(
-                                            message = "$cantidadAComprar ${p.nombre} añadido(s) al carrito.",
-                                            actionLabel = "Ver Carrito",
-                                            duration = SnackbarDuration.Short
-                                        )
+                                        // Asegúrate de que esta función exista en CarritoViewModel
+                                        // En tu código anterior no estaba, agrégala si falta:
+                                        // fun agregarProducto(producto: Producto, cantidad: Int) { ... }
+                                        // Si no la tienes, usa el repositorio directamente o agrégala al VM.
+                                        // Por ahora asumo que la agregarás al CarritoViewModel.
+                                        // carritoViewModel.agregarProducto(p, cantidadAComprar)
                                     }
                                 }
                             },

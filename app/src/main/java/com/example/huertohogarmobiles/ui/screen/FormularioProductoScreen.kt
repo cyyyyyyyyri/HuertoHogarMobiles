@@ -94,13 +94,15 @@ fun FormularioProductoScreen(
                 OutlinedTextField(
                     value = precio,
                     onValueChange = { nuevoValor ->
+                        // Filtra para dejar solo números y un solo punto decimal
                         val filtered = nuevoValor.filter { char -> char.isDigit() || char == '.' }
                         if (filtered.count { it == '.' } <= 1) {
                             precio = filtered
                         }
                     },
                     label = { Text("Precio (CLP)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberDecimal),
+                    // CORRECCIÓN AQUÍ: Usa KeyboardType.Decimal
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.weight(1f)
                 )
                 OutlinedTextField(
