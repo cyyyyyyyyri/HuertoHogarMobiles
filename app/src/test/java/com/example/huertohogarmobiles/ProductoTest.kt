@@ -1,8 +1,10 @@
 package com.example.huertohogarmobiles
 
 import com.example.huertohogarmobiles.domain.model.Producto
+import org.junit.Assert.assertFalse // Importar explícitamente Assert
+import org.junit.Assert.assertTrue // Importar explícitamente Assert
 import org.junit.Before
-import kotlin.test.Test
+import org.junit.Test
 
 class ProductoTest {
 

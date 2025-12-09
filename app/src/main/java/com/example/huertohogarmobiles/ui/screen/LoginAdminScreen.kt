@@ -2,6 +2,7 @@ package com.example.huertohogarmobiles.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
@@ -34,7 +35,7 @@ fun LoginAdminScreen(
                 title = { Text("Login Administrador") },
                 navigationIcon = {
                     IconButton(onClick = onVolverClick) {
-                        Icon(Icons.Default.ArrowBack, "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
                     }
                 }
             )

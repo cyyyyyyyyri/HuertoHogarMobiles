@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,7 +34,7 @@ fun ProductoCard(producto: Producto, onClick: (Int) -> Unit) {
                 Text(producto.nombre, style = MaterialTheme.typography.titleMedium)
                 Text("$${producto.precio} CLP / Kilo", style = MaterialTheme.typography.bodySmall)
             }
-            Icon(Icons.Default.ArrowForward, contentDescription = "Ver Detalle")
+            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Ver Detalle")
         }
     }
 }

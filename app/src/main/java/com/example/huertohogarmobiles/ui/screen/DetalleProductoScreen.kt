@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +50,7 @@ fun DetalleProductoScreen(
                 title = { Text(producto?.nombre ?: "Cargando...") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
                     }
                 }
             )
@@ -81,7 +83,11 @@ fun DetalleProductoScreen(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    Divider(Modifier.padding(vertical = 16.dp))
+                    HorizontalDivider(
+                        Modifier.padding(vertical = 16.dp),
+                        DividerDefaults.Thickness,
+                        DividerDefaults.color
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -97,7 +103,11 @@ fun DetalleProductoScreen(
                             color = if (p.stock < 10) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    Divider(Modifier.padding(vertical = 16.dp))
+                    HorizontalDivider(
+                        Modifier.padding(vertical = 16.dp),
+                        DividerDefaults.Thickness,
+                        DividerDefaults.color
+                    )
                     Text("Descripción", style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(p.descripcion, style = MaterialTheme.typography.bodyLarge)
