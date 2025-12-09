@@ -1,8 +1,7 @@
-package com.example.huertohogarmobiles.domain.model
+package com.example.huertohogarmobiles
 
-import org.junit.Assert.*
+import com.example.huertohogarmobiles.domain.model.Producto
 import org.junit.Before
-import org.junit.Test
 
 class ProductoTest {
 

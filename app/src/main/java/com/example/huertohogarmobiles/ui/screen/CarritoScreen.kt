@@ -2,7 +2,6 @@ package com.example.huertohogarmobiles.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -17,13 +16,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.huertohogarmobiles.domain.model.ItemCarrito
 import com.example.huertohogarmobiles.ui.viewmodel.CarritoViewModel
 
 
 @Composable
 fun CarritoItemCard(
-    item: ItemCarrito,
+    item: Int,
     onAumentarCantidad: () -> Unit,
     onDisminuirCantidad: () -> Unit,
     onEliminar: () -> Unit
